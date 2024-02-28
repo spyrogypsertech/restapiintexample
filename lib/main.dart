@@ -7,10 +7,17 @@ import 'package:rapiex/widgets/allemployees.dart';
 
 void main() async {
   await GetStorage.init();
-  runApp(MyApp());
+  final box = GetStorage();
+  final isLoggedIn = box.hasData('name');
+
+  runApp(MyApp(isLoggedIn: isLoggedIn,));
 }
 
 class MyApp extends StatelessWidget {
+   final bool isLoggedIn;
+
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -18,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      home: isLoggedIn ? HomePage() : LoginPage(), // Navigate to HomePage if logged in, otherwise to LoginPage
     );
   }
 }
@@ -104,7 +111,8 @@ class HomePage extends StatelessWidget {
               child: Text('View Employee Details'),
             ),
             ElevatedButton(
-              onPressed: () => Get.to(EmployeeListPage()), // Navigate to EmployeeListPage
+              onPressed: () =>
+                  Get.to(EmployeeListPage()), // Navigate to EmployeeListPage
               child: Text('Show All Employees'), // Button to navigate
             ),
           ],
@@ -127,7 +135,6 @@ class DetailPage extends StatelessWidget {
           children: [
             Text('Name: ${box.read<String>('name')}'),
             Text('Designation: ${box.read<String>('designation')}'),
-            
             Text('Company: ${box.read<String>('company')}'),
           ],
         ),
